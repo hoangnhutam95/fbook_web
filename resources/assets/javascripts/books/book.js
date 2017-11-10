@@ -351,6 +351,63 @@ Book.addNew = function () {
     });
 };
 
+Book.editBook = function () {
+    var scope = this;
+    if (!scope.checkAuthorized()) return false;
+
+    if (!$('#form-add-book').valid()) {
+        return false;
+    }
+
+    // $('.loader').show();
+    var formData = new FormData();
+    formData.append('title', $('#title').val().trim());
+    formData.append('author', $('#author').val().trim());
+    formData.append('category_id', $('#category').val().trim());
+    formData.append('office_id', $('#office').val().trim());
+    formData.append('publish_date', $('#publish_date').val());
+    formData.append('description', $('#description').val().trim());
+
+    //Attach file
+    if ($("[name='image']")[0].files[0]) {
+        for (var i = 0; i < $("[name='image']").length; i++) {
+            formData.append('medias[' + i + '][file]', $("[name='image']")[i].files[0]);
+
+            if (i === 0) {
+                formData.append('medias[' + i + '][type]', 1);
+            } else {
+                formData.append('medias[' + i + '][type]', 0);
+            }
+        }
+    }
+
+    $.ajax({
+        url: API_PATH + 'books/' + $('.edit_book_id').data('edit-book-id'),
+        headers: {'Accept': 'application/json', 'Authorization': access_token},
+        method: 'PUT',
+        contentType:false,
+        cache: false,
+        processData:false,
+        data: formData
+    }).done(function (res) {
+        if (res.message.status && res.message.code === 200) {
+            window.location.href = '/home';
+        }
+    }).fail(function (errors) {
+        $('.loader').hide();
+        var msg = '';
+        if (typeof(errors.responseJSON.message.description) !== 'undefined') {
+            errors.responseJSON.message.description.forEach(function (err) {
+                msg += err;
+            });
+        } else {
+            msg = 'Can\'t load more';
+        }
+
+        showNotify('danger', msg, {icon: 'glyphicon glyphicon-remove'}, {delay: 3000});
+    });
+};
+
 Book.modalBooking = function () {
     var scope = this;
     var elementBooking = $('button[name=booking]');

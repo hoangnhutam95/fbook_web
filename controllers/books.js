@@ -488,4 +488,71 @@ router.post('/booking/:id', authorize.isAuthenticated, function (req, res, next)
     });
 });
 
+router.get('/:id/edit', authorize.isAuthenticated, function (req, res, next) {
+    async.parallel({
+        offices: function (callback) {
+            request({
+                url: req.configs.api_base_url + 'offices',
+                headers: objectHeaders.headers
+            }, function (error, response, body) {
+                if (!error && response.statusCode === 200) {
+                    try {
+                        var offices = JSON.parse(body);
+                        callback(null, offices);
+                    } catch (errorJSONParse) {
+                        callback(null, null);
+                    }
+                } else {
+                    callback(null, null);
+                }
+            });
+        },
+        categories: function (callback) {
+            request({
+                url: req.configs.api_base_url + 'categories',
+                headers: objectHeaders.headers
+            }, function (error, response, body) {
+                if (!error && response.statusCode === 200) {
+                    try {
+                        var categories = JSON.parse(body);
+                        callback(null, categories);
+                    } catch (errorJSONParse) {
+                        callback(null, null);
+                    }
+                } else {
+                    callback(null, null);
+                }
+            });
+        },
+        book: function (callback) {
+            request({
+                url: req.configs.api_base_url + 'books/' + req.params.id,
+                headers: objectHeaders.headers({'Authorization': req.session.access_token})
+            }, function (error, response, body) {
+                if (!error && response.statusCode === 200) {
+                    try {
+                        var book = JSON.parse(body);
+                        callback(null, book);
+                    } catch (errorJSONParse) {
+                        callback(null, null);
+                    }
+                } else {
+                    callback(null, null);
+                }
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            res.redirect('back');
+        } else {
+            res.render('books/edit', {
+                categories: results.categories,
+                offices: results.offices,
+                officeId: req.session.office_id,
+                book: results.book
+            });
+        }
+    });
+});
+
 module.exports = router;

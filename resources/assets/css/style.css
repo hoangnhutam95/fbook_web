@@ -43,8 +43,6 @@
 
 a {
     color: #5d5d5d;
-    -webkit-transition: 0.3s;
-    transition: 0.3s;
 }
 
 a:focus,
