@@ -613,15 +613,19 @@ router.post('/post-review/:id', urlencodedParser, (req, res, next) => {
 
 });
 
-router.get('/view-review/:id',localSession, (req, res, next) => {
+router.get('/view-review/:id', authorize.isAuthenticated, (req, res, next) => {
     request({
         url: req.configs.api_base_url + 'books/review-details/' + req.params.id + '/' + req.session.user.id,
         headers: objectHeaders.headers({'Authorization': req.session.access_token})
     }, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var data = JSON.parse(body);
+            var messages = req.flash('errors');
             res.render('books/review_details', {
                 data : data,
+                messages: messages,
+                error: req.flash('error'),
+                info: req.flash('info'),
                 userId : req.session.user.id
             });
         } else {

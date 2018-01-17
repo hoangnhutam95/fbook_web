@@ -88,9 +88,9 @@
         errorPlacement: function(error, element) {
         error.insertAfter(element);
     }});
-    
+
     Book.init();
-    
+
     $('button[name=return]').on('click', function (e) {
         e.preventDefault();
         var bookId = $(this).attr('data-book-id');
@@ -103,7 +103,7 @@
         };
         Book.return(data);
     });
-    
+
     $('button[name=cancel]').on('click', function (e) {
         e.preventDefault();
         var bookId = $(this).attr('data-book-id');
@@ -116,19 +116,19 @@
         };
         Book.cancel(data);
     });
-    
+
     function showTab(element) {
         $('.nav-tabs a[href="' + element + '"]').click();
     }
-    
+
  </script>
  <script src="/bower/bootstrap-star-rating/js/star-rating.js"></script>
  <script src="/bower/sweetalert/dist/sweetalert.min.js"></script>
  <script src="/bower/ckeditor/ckeditor.js"></script>
  <script>
     CKEDITOR.replace('review_content', {
-            height: 600
-        });
+        height: 600
+    });
  </script>
  <%- contentFor('appCss') %>
  <link href="/bower/bootstrap-star-rating/css/star-rating.css" rel="stylesheet" type="text/css">
